@@ -99,5 +99,25 @@ def get_scores():
             'memory': { 'persist_memory': [score7, score8] }
         }
     """
+    aggregate = {"llm":{},"retriever":{},"memory":{}}
 
-    pass
+    for component_type in aggregate.keys():
+        #From redis we get hash of sum total scores
+        values = client.hgetall(f"{component_type}_score_values")
+
+        #From redis we get hash of number of times each component was voted
+        counts = client.hgetall(f"{component_type}_score_counts")
+
+        names = values.keys()
+
+        for name in names :
+            score =int(values.get(name,1))
+            count = int(counts.get(name,1))
+            avg = score/count
+            aggregate[component_type][name] = [avg]
+        
+        
+    return aggregate
+
+
+
