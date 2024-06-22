@@ -6,6 +6,7 @@ from app.chat.memories import memory_map
 from langchain.chat_models import ChatOpenAI
 from app.web.api import ( set_conversation_components, get_conversation_components)
 import random
+from app.chat.score import random_component_by_score
 
 def select_component(
         componenet_type, component_map, chat_args
@@ -21,7 +22,7 @@ def select_component(
         return previous_component, builder(chat_args)
     else:
         #first message of conversation
-        random_name = random.choice(list(component_map.keys()))
+        random_name = random_component_by_score(component_type,component_map) 
         builder = component_map[random_name]
         return random_name, builder(chat_args)
 

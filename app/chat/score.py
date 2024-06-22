@@ -1,3 +1,45 @@
+from app.chat.redis import client
+import random
+
+
+
+def random_component_by_score(component_type, component_map):
+    #Make sure component type is one of three we support
+    if component_type not in ["llm","retriever","memory"]:
+        raise ValueError["Invalid component type"]
+
+
+    #From redis we get hash of sum total scores
+    values = client.hgetall(f"{component_type}_score_values")
+
+    #From redis we get hash of number of times each component was voted
+    counts = client.hgetall(f"{component_type}_score_counts")
+
+    #Get the valid components names from component_map
+    names = component_map.keys()
+
+    #Calculate average score for each component from component_map
+    avg_scores ={}
+    for name in names:
+        score = int(values.get(name,1)) #1 default for component that was never used before
+        count = int(counts.get(name,1))
+        avg_score = score/count
+        #atleast an avg score of 0.1, to let component have some chance of being selected
+        avg_scores[name] = max(avg_score,0.1) 
+
+
+    #Do a weighted random selection
+    sum_scores = sum(avg_scores.values())
+    random_val = random.uniform(0,sum_scores)
+    cum = 0
+    for name, score in avg_scores.items():
+        cum+=score
+        if random_val <=cum:
+            return name
+
+
+
+
 def score_conversation(
     conversation_id: str, score: float, llm: str, retriever: str, memory: str
 ) -> None:
@@ -17,7 +59,22 @@ def score_conversation(
     score_conversation('abc123', 0.75, 'llm_info', 'retriever_info', 'memory_info')
     """
 
-    pass
+
+    score = min(max(score,0),1) #keeping score between 0 and 1
+
+    # we will keep sum of votes for each componenets, and total votes made for each components seperately
+    # basically storing values to calculate average later, cannot store average directly
+
+    client.hincrby("llm_score_values",llm,score)
+    client.hincrby("llm_score_counts",llm,1)
+
+    client.hincrby("retriever_score_values",retriever, score)
+    client.hincrby("retriever_score_counts",retriever, 1)
+
+    client.hincrby("memory_score_values",memory,score)
+    client.hincrby("memory_score_counts",memory,1)
+
+
 
 
 def get_scores():
