@@ -5,16 +5,19 @@ from app.chat.llms import llm_map
 from app.chat.memories import memory_map
 from langchain.chat_models import ChatOpenAI
 from app.web.api import ( set_conversation_components, get_conversation_components)
-import random
 from app.chat.score import random_component_by_score
 
+
+
+
+
 def select_component(
-        componenet_type, component_map, chat_args
+        component_type, component_map, chat_args
 ):
     components = get_conversation_components(
         chat_args.conversation_id
     )
-    previous_component = components[componenet_type]
+    previous_component = components[component_type]
 
     if previous_component:
         #not first message
@@ -69,9 +72,11 @@ def build_chat(chat_args: ChatArgs):
     #specifying llm object for CondenseLLM of conversationRetrievalQa Chain
     condense_question_llm = ChatOpenAI(streaming=False)
 
+
     return StreamingConversationalRetrievalChain.from_llm(
         llm=llm, #used for CombineDocsLLM, by default for both as well.
         condense_question_llm= condense_question_llm,#used for CondensedLLM
         memory=memory,
-        retriever=retriever
+        retriever=retriever,
+        metadata = chat_args.metadata
     )
