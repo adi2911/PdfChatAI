@@ -1,22 +1,42 @@
 # PdfChatAI
 
+PdfChatAI enables users to add PDFs in a chat-based session and ask any questions related to them in a conversational manner. The application also includes a scoring system where a thumbs up gives a +1 score, helping to improve the model based on user feedback.
+
+## Table of Contents
+
+- [Description](#description)
+- [Tech Stack](#tech-stack)
+- [First Time Setup](#first-time-setup)
+- [Running the App](#running-the-app)
+
+## Description
+
+PdfChatAI is an innovative application designed to revolutionize how users interact with PDF documents. By leveraging advanced language models and seamless integration with various technologies, PdfChatAI provides a conversational interface where users can upload a PDF and ask questions about its content. The application responds accurately and contextually to user queries, making information retrieval from PDFs more intuitive and efficient.
+
+Key Features:
+- **Conversational Interaction**: Users can ask questions about the content of a PDF in a natural, conversational manner.
+- **Scoring System**: Users can rate responses with a thumbs up (+1 score), which is stored in Redis and used to train the model for improved accuracy.
+- **Efficient Storage**: The application uses Pinecone to store embeddings, ensuring quick and efficient retrieval of document information.
+
+## Tech Stack
+
+**Backend:**
+- **Language**: Python - The primary programming language used for the application.
+- **LLM Model**: OpenAI - Provides the language model used for generating responses.
+- **Interaction**: LangChain - Facilitates interaction with the OpenAI model, allowing seamless conversational flow.
+- **Text Generation Tracing**: LangFuse - Used for tracing and monitoring text generation processes.
+- **Score Storage**: Redis - Stores user feedback scores for each reply, which helps in training the model to improve response accuracy.
+- **Embeddings Storage**: Pinecone - Efficiently stores and retrieves embeddings for quick access to document information.
+
+**Frontend:**
+- **Framework**: Flask - Provides the web framework for the chat-based UI.
+- **Background Processing**: Celery - Integrates with Flask to handle background tasks, such as processing user queries and interacting with the language model.
 
 
 
+## First Time Setup
 
-
-
-
-
-
-
-
-
-
-
-# First Time Setup
-
-## Using pip [Recommended]
+### Using pip [Recommended]
 
 ```
 # Install dependencies
@@ -27,7 +47,7 @@ flask --app app.web init-db
 
 ```
 
-## Using Venv [Optional]
+### Using Venv [Optional]
 
 These instructions are included if you wish to use venv to manage your evironment and dependencies instead of Pipenv.
 
@@ -48,7 +68,7 @@ pip3 install -r requirements.txt
 flask --app app.web init-db
 ```
 
-# Running the app 
+## Running the app 
 
 There are three separate processes that need to be running for the app to work: the server, the worker, and Redis.
 
@@ -80,7 +100,7 @@ redis-server
 flask --app app.web init-db
 ```
 
-# Running the app [Venv]
+## Running the app [Venv]
 
 _These instructions are included if you wish to use venv to manage your evironment and dependencies instead of Pipenv._
 
